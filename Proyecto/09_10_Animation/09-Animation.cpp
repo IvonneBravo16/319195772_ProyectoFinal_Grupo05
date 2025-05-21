@@ -236,7 +236,7 @@ bool Update() {
 	// Procesa la entrada del teclado o mouse
 	processInput(window);
 
-	if (thirdPersonMode) {
+	if (thirdPersonMode==true) {
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 			angleAroundTarget -= 50.0f * deltaTime;
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
@@ -249,7 +249,10 @@ bool Update() {
 		camera.Yaw = -90.0f + angleAroundTarget;
 		camera.Pitch = -glm::degrees(atan(heightOffset / distanceToTarget));
 	}
-
+	else {
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+	}
 	// Renderizado R - G - B - A
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -482,6 +485,11 @@ void processInput(GLFWwindow* window)
 			camera.ProcessKeyboard(LEFT, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 			camera.ProcessKeyboard(RIGHT, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+			camera.ProcessKeyboard(UP, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+			camera.ProcessKeyboard(DOWN, deltaTime);
+
 	}
 	else {
 		if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
@@ -575,11 +583,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // glfw: Callback del movimiento y eventos del mouse
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (thirdPersonMode) return;  // No mover cámara 1era persona si está modo 3era persona
-
-	static bool firstMouse = true;
-	static float lastX = SCR_WIDTH / 2.0f;
-	static float lastY = SCR_HEIGHT / 2.0f;
+	if (thirdPersonMode==true) return;  // No mover cámara 1era persona si está modo 3era persona
+	
 
 	if (firstMouse)
 	{
